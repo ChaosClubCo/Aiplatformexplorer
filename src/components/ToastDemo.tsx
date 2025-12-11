@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { useToast } from '../hooks/useEventToasts';
+import { useToast } from '../contexts/ToastContext';
 
 /**
  * Demo component for testing toast notifications

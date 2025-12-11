@@ -318,6 +318,8 @@ export const globalEventBus = new EventBus({
   maxListeners: 200,
   errorHandler: (error, event) => {
     console.error(`[EventBus] Error in event ${event.type}:`, error);
+    console.error('[EventBus] Event payload:', event.payload);
+    console.error('[EventBus] Full event:', event);
   },
 });
 
@@ -349,11 +351,18 @@ export const DomainEvents = {
   RECOMMENDATION_STARTED: 'recommendation.started',
   RECOMMENDATION_COMPLETED: 'recommendation.completed',
   RECOMMENDATION_FAILED: 'recommendation.failed',
+  RECOMMENDATION_GENERATED: 'recommendation.generated',
+  
+  // Comparison events
+  COMPARISON_STARTED: 'comparison.started',
+  COMPARISON_GENERATED: 'comparison.generated',
+  COMPARISON_FAILED: 'comparison.failed',
   
   // Export events
   EXPORT_STARTED: 'export.started',
   EXPORT_COMPLETED: 'export.completed',
   EXPORT_FAILED: 'export.failed',
+  DATA_EXPORTED: 'data.exported',
   
   // Analytics events
   PAGE_VIEW: 'analytics.pageView',

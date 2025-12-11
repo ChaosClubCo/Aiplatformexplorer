@@ -3,6 +3,8 @@
  * 
  * @description Automatically shows toasts for domain events
  * @module hooks/useEventToasts
+ * @version 2.0.0
+ * @updated 2024-12-11 - Fixed subscription cleanup and payload access
  */
 
 import { useEffect } from 'react';
@@ -25,83 +27,96 @@ export function useEventToasts() {
 
   useEffect(() => {
     // Subscribe to error events
-    const errorUnsubscribe = globalEventBus.on(DomainEvents.ERROR_OCCURRED, (payload) => {
-      const error = payload.error as Error;
-      showToast(
-        error.message || 'An error occurred',
-        'error',
-        7000
-      );
+    const errorSubscription = globalEventBus.on(DomainEvents.ERROR_OCCURRED, (event) => {
+      try {
+        // Safely access the error from the event payload
+        const errorPayload = event.payload;
+        const error = errorPayload?.error as Error;
+        const message = error?.message || String(error) || 'An error occurred';
+        
+        showToast(message, 'error', 7000);
+      } catch (err) {
+        console.error('[useEventToasts] Error handling ERROR_OCCURRED event:', err, event);
+        showToast('An unexpected error occurred', 'error', 7000);
+      }
     });
 
     // Subscribe to platform selection events
-    const platformSelectedUnsubscribe = globalEventBus.on(
+    const platformSelectedSubscription = globalEventBus.on(
       DomainEvents.PLATFORM_SELECTED,
-      (payload) => {
-        showToast(
-          `Selected ${payload.platformName}`,
-          'info',
-          3000
-        );
+      (event) => {
+        try {
+          const platformName = event.payload?.platformName || 'platform';
+          showToast(`Selected ${platformName}`, 'info', 3000);
+        } catch (err) {
+          console.error('[useEventToasts] Error handling PLATFORM_SELECTED event:', err);
+        }
       }
     );
 
     // Subscribe to comparison events
-    const comparisonUnsubscribe = globalEventBus.on(
+    const comparisonSubscription = globalEventBus.on(
       DomainEvents.COMPARISON_GENERATED,
-      (payload) => {
-        showToast(
-          `Comparing ${payload.platforms.length} platforms`,
-          'success',
-          4000
-        );
+      (event) => {
+        try {
+          const platformCount = event.payload?.platforms?.length || 0;
+          showToast(`Comparing ${platformCount} platforms`, 'success', 4000);
+        } catch (err) {
+          console.error('[useEventToasts] Error handling COMPARISON_GENERATED event:', err);
+        }
       }
     );
 
     // Subscribe to recommendation events
-    const recommendationUnsubscribe = globalEventBus.on(
+    const recommendationSubscription = globalEventBus.on(
       DomainEvents.RECOMMENDATION_GENERATED,
-      (payload) => {
-        showToast(
-          `Found ${payload.recommendations.length} recommended platforms`,
-          'success',
-          4000
-        );
+      (event) => {
+        try {
+          const recCount = event.payload?.recommendations?.length || 0;
+          showToast(`Found ${recCount} recommended platforms`, 'success', 4000);
+        } catch (err) {
+          console.error('[useEventToasts] Error handling RECOMMENDATION_GENERATED event:', err);
+        }
       }
     );
 
     // Subscribe to export events
-    const exportUnsubscribe = globalEventBus.on(
+    const exportSubscription = globalEventBus.on(
       DomainEvents.DATA_EXPORTED,
-      (payload) => {
-        showToast(
-          `Exported data as ${payload.format.toUpperCase()}`,
-          'success',
-          3000
-        );
+      (event) => {
+        try {
+          const format = event.payload?.format?.toUpperCase() || 'file';
+          showToast(`Exported data as ${format}`, 'success', 3000);
+        } catch (err) {
+          console.error('[useEventToasts] Error handling DATA_EXPORTED event:', err);
+        }
       }
     );
 
     // Subscribe to ROI calculation events
-    const roiUnsubscribe = globalEventBus.on(
+    const roiSubscription = globalEventBus.on(
       DomainEvents.ROI_CALCULATED,
       () => {
-        showToast(
-          'ROI calculation complete',
-          'success',
-          3000
-        );
+        try {
+          showToast('ROI calculation complete', 'success', 3000);
+        } catch (err) {
+          console.error('[useEventToasts] Error handling ROI_CALCULATED event:', err);
+        }
       }
     );
 
-    // Clean up subscriptions
+    // Clean up subscriptions on unmount
     return () => {
-      errorUnsubscribe();
-      platformSelectedUnsubscribe();
-      comparisonUnsubscribe();
-      recommendationUnsubscribe();
-      exportUnsubscribe();
-      roiUnsubscribe();
+      try {
+        errorSubscription.unsubscribe();
+        platformSelectedSubscription.unsubscribe();
+        comparisonSubscription.unsubscribe();
+        recommendationSubscription.unsubscribe();
+        exportSubscription.unsubscribe();
+        roiSubscription.unsubscribe();
+      } catch (err) {
+        console.error('[useEventToasts] Error during cleanup:', err);
+      }
     };
   }, [showToast]);
 }

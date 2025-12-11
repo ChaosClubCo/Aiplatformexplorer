@@ -43,8 +43,9 @@ function initializeApp() {
   
   // Set up global error handling
   window.addEventListener('error', (event) => {
+    const error = event.error || new Error(event.message || 'Unknown error');
     globalEventBus.emit(DomainEvents.ERROR_OCCURRED, {
-      error: event.error,
+      error,
       context: 'window.onerror',
       severity: 'high' as const,
     });
@@ -52,8 +53,11 @@ function initializeApp() {
   
   // Set up unhandled promise rejection handling
   window.addEventListener('unhandledrejection', (event) => {
+    const error = event.reason instanceof Error 
+      ? event.reason 
+      : new Error(String(event.reason) || 'Unhandled promise rejection');
     globalEventBus.emit(DomainEvents.ERROR_OCCURRED, {
-      error: new Error(event.reason),
+      error,
       context: 'unhandledrejection',
       severity: 'high' as const,
     });

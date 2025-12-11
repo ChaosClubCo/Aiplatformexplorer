@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  /* Color System */
+  --color-primary: #E88A1D;
+  --color-primary-hover: #D07614;
+  --color-primary-light: #FEF3E7;
+  --color-primary-rgb: 232, 138, 29;
+  
+  --color-secondary: #6B5B7A;
+  --color-secondary-hover: #5A4B69;
+  --color-secondary-light: #F0EDF3;
+  
+  --color-accent: #3B82F6;
+  --color-success: #059669;
+  --color-success-light: #D1FAE5;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+  --color-error: #DC2626;
+  --color-error-light: #FEE2E2;
+  --color-info: #0284C7;
+  --color-info-light: #E0F2FE;
+  
+  --color-bg-primary: #FFFCF8;
+  --color-bg-secondary: #FEF7F0;
+  --color-bg-tertiary: #FFF8F1;
+  
+  --score-excellent: #059669;
+  --score-good: #10B981;
+  --score-average: #F59E0B;
+  --score-limited: #EF4444;
+  
+  --priority-baseline: #3B82F6;
+  --priority-baseline-bg: #EFF6FF;
+  --priority-dual: #8B5CF6;
+  --priority-dual-bg: #F5F3FF;
+  --priority-high: #059669;
+  --priority-high-bg: #D1FAE5;
+  --priority-specialized: #F59E0B;
+  --priority-specialized-bg: #FEF3C7;
+  --priority-emerging: #EC4899;
+  --priority-emerging-bg: #FCE7F3;
+  --priority-optional: #6B7280;
+  --priority-optional-bg: #F3F4F6;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--color-bg-primary);
+  color: #231C19;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-primary-light);
+  color: #231C19;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A3A3A3;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(120%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

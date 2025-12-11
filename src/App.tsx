@@ -9,6 +9,7 @@ import PlatformTable from './components/PlatformTable';
 import ToastContainer from './components/ToastContainer';
 import Footer from './components/Footer';
 import Statistics from './components/Statistics';
+import RecommendationWizard from './components/RecommendationWizard';
 
 // Lazy load heavy components for better performance
 const FeatureMatrix = lazy(() => import('./components/FeatureMatrix'));
@@ -273,22 +274,7 @@ export default function App() {
         )}
 
         {currentTab === 'assessment' && (
-          <div className="py-8 max-w-[1200px] mx-auto px-6">
-            <div className="mb-6">
-              <h2 className="text-3xl mb-2 font-serif">AI Readiness Assessment</h2>
-              <p className="text-lg text-[#5C524D]">
-                Evaluate your organization's readiness for AI adoption across key dimensions.
-              </p>
-            </div>
-
-            <div className="bg-[#E0F2FE] border border-[#0284C7] rounded-xl p-6 text-center">
-              <p className="text-lg text-[#0284C7] mb-4">📋 Assessment Module</p>
-              <p className="text-[#5C524D]">
-                The full AI Readiness Assessment wizard will be available in version 3.2. In the meantime, use the
-                Platform Explorer and ROI Calculator to evaluate your options.
-              </p>
-            </div>
-          </div>
+          <RecommendationWizard platforms={PLATFORMS_DATA} />
         )}
 
         {currentTab === 'glossary' && (

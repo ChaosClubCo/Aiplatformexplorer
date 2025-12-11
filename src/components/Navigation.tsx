@@ -9,7 +9,7 @@ export default function Navigation({ currentTab, onTabChange, platformCount }: N
     { id: 'explorer', label: 'Platform Explorer', icon: '🔍', badge: platformCount },
     { id: 'matrix', label: 'Feature Matrix', icon: '📊' },
     { id: 'financial', label: 'ROI Calculator', icon: '💰' },
-    { id: 'assessment', label: 'AI Assessment', icon: '📋' },
+    { id: 'assessment', label: 'Get Recommendation', icon: '🤖' },
     { id: 'glossary', label: 'Glossary', icon: '📚' }
   ];
 

@@ -238,3 +238,7 @@ export class SessionStorageService {
 // Export singleton instances
 export const storage = new StorageService();
 export const sessionStorage = new SessionStorageService();
+
+// Default export for backward compatibility
+export const storageService = storage;
+export default storageService;

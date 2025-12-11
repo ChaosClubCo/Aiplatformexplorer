@@ -7,7 +7,6 @@
 
 // Storage hooks
 export * from './useLocalStorage';
-export * from './useSessionStorage';
 
 // Analytics hooks
 export * from './useAnalytics';
@@ -26,3 +25,7 @@ export * from './useClickOutside';
 export * from './usePrevious';
 export * from './useToggle';
 export * from './useAsync';
+
+// Context hooks
+export { useToast } from '../contexts/ToastContext';
+export * from './useEventToasts';

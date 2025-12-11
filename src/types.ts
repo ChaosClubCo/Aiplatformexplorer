@@ -36,11 +36,20 @@ export interface Platform {
     multilingual: number;
     reasoning: number;
   };
+  avgScore?: number; // Average of all scores
   strengths: string[];
+  features: string[]; // Added for filtering
   useCases: string[];
   officialUrl: string;
   description: string;
   verdict: string;
+  pricingModel?: string; // Added for better categorization
+  soc2?: boolean; // SOC2 compliance
+  gdpr?: boolean; // GDPR compliance
+  hipaa?: boolean; // HIPAA compliance
+  iso27001?: boolean; // ISO 27001 compliance
+  apiAccess?: boolean; // Has API access
+  fineTuning?: boolean; // Supports fine-tuning
 }
 
 export interface Feature {

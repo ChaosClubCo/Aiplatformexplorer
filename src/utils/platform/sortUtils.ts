@@ -6,7 +6,18 @@
  */
 
 import type { Platform } from '../../types';
-import type { SortOption } from '../../constants';
+
+export type SortOption = 
+  | 'marketShare-desc'
+  | 'marketShare-asc'
+  | 'price-asc'
+  | 'price-desc'
+  | 'name-asc'
+  | 'name-desc'
+  | 'contextWindow-desc'
+  | 'compliance-desc'
+  | 'growthRate-desc'
+  | 'avgScore-desc';
 
 /**
  * Sort platforms by market share (descending)
@@ -109,20 +120,6 @@ export function sortByAvgScoreDesc(platforms: Platform[]): Platform[] {
     const bScore = b.avgScore || 0;
     return bScore - aScore;
   });
-}
-
-/**
- * Sort platforms by provider (alphabetically)
- */
-export function sortByProvider(platforms: Platform[]): Platform[] {
-  return [...platforms].sort((a, b) => a.provider.localeCompare(b.provider));
-}
-
-/**
- * Sort platforms by category (alphabetically)
- */
-export function sortByCategory(platforms: Platform[]): Platform[] {
-  return [...platforms].sort((a, b) => a.categoryLabel.localeCompare(b.categoryLabel));
 }
 
 /**

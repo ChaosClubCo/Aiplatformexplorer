@@ -1,278 +1,446 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { Platform, Filters, ToastMessage } from '../types';
+/**
+ * Application Context
+ * 
+ * @description Global state management using React Context API
+ * @module context/AppContext
+ * @architecture Flux-inspired unidirectional data flow
+ */
+
+import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
+import { Platform, Filters } from '../types';
 import { PLATFORMS_DATA } from '../data/platforms';
-import { APP_CONFIG } from '../config/app.config';
-import { TABS, TOAST_TYPES } from '../constants';
-import type { Tab, ToastType } from '../constants';
+import { storageService } from '../services/storageService';
 
 /**
  * Application State Interface
  */
-interface AppState {
-  // Navigation
-  currentTab: Tab;
-  
-  // Platform Data
-  platforms: Platform[];
-  selectedPlatforms: string[];
-  selectedPlatform: Platform | null;
+export interface AppState {
+  // Platform data
+  platforms: {
+    all: Platform[];
+    filtered: Platform[];
+    selected: string[];
+  };
   
   // Filters
   filters: Filters;
-  currentView: 'cards' | 'table';
   
-  // UI State
-  toasts: ToastMessage[];
-  showComparison: boolean;
-  isLoading: boolean;
-  error: Error | null;
-}
-
-/**
- * Application Actions Interface
- */
-interface AppActions {
+  // UI state
+  ui: {
+    currentView: 'cards' | 'table';
+    showComparison: boolean;
+    showPlatformModal: boolean;
+    selectedPlatformId: string | null;
+    loading: boolean;
+    error: string | null;
+  };
+  
   // Navigation
-  setCurrentTab: (tab: Tab) => void;
+  navigation: {
+    currentRoute: string;
+    history: string[];
+  };
   
-  // Platform Selection
-  togglePlatformSelection: (platformId: string) => void;
-  clearPlatformSelection: () => void;
-  setSelectedPlatform: (platform: Platform | null) => void;
-  
-  // Filters
-  setFilters: (filters: Filters) => void;
-  clearFilters: () => void;
-  setCurrentView: (view: 'cards' | 'table') => void;
-  
-  // Comparison
-  setShowComparison: (show: boolean) => void;
-  handleCompare: () => void;
-  
-  // Toasts
-  addToast: (message: string, type?: ToastType) => void;
-  removeToast: (id: string) => void;
-  
-  // Export
-  exportData: (format: string) => void;
-  
-  // Loading & Error
-  setLoading: (loading: boolean) => void;
-  setError: (error: Error | null) => void;
+  // User preferences
+  preferences: {
+    theme: 'light' | 'dark';
+    language: 'en';
+    itemsPerPage: number;
+  };
 }
 
 /**
- * Combined App Context Type
+ * Action Types
  */
-type AppContextType = AppState & AppActions;
+type Action =
+  // Platform actions
+  | { type: 'SET_PLATFORMS'; payload: Platform[] }
+  | { type: 'SET_FILTERED_PLATFORMS'; payload: Platform[] }
+  | { type: 'TOGGLE_PLATFORM_SELECTION'; payload: string }
+  | { type: 'CLEAR_PLATFORM_SELECTION' }
+  | { type: 'SET_PLATFORM_SELECTION'; payload: string[] }
+  
+  // Filter actions
+  | { type: 'SET_FILTERS'; payload: Partial<Filters> }
+  | { type: 'RESET_FILTERS' }
+  
+  // UI actions
+  | { type: 'SET_VIEW'; payload: 'cards' | 'table' }
+  | { type: 'TOGGLE_COMPARISON' }
+  | { type: 'SHOW_PLATFORM_MODAL'; payload: string }
+  | { type: 'HIDE_PLATFORM_MODAL' }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  
+  // Navigation actions
+  | { type: 'NAVIGATE'; payload: string }
+  
+  // Preference actions
+  | { type: 'SET_THEME'; payload: 'light' | 'dark' }
+  | { type: 'SET_ITEMS_PER_PAGE'; payload: number };
 
 /**
  * Initial State
  */
 const initialState: AppState = {
-  currentTab: TABS.EXPLORER,
-  platforms: PLATFORMS_DATA,
-  selectedPlatforms: [],
-  selectedPlatform: null,
+  platforms: {
+    all: PLATFORMS_DATA,
+    filtered: PLATFORMS_DATA,
+    selected: [],
+  },
   filters: {
     provider: 'all',
     category: 'all',
     search: '',
     sortBy: 'marketShare-desc',
   },
-  currentView: APP_CONFIG.ui.defaultView,
-  toasts: [],
-  showComparison: false,
-  isLoading: false,
-  error: null,
+  ui: {
+    currentView: 'cards',
+    showComparison: false,
+    showPlatformModal: false,
+    selectedPlatformId: null,
+    loading: false,
+    error: null,
+  },
+  navigation: {
+    currentRoute: 'explorer',
+    history: ['explorer'],
+  },
+  preferences: {
+    theme: 'light',
+    language: 'en',
+    itemsPerPage: 12,
+  },
 };
 
 /**
- * App Context
+ * Reducer Function
+ * 
+ * Handles all state mutations following Flux pattern
+ */
+function appReducer(state: AppState, action: Action): AppState {
+  switch (action.type) {
+    // Platform actions
+    case 'SET_PLATFORMS':
+      return {
+        ...state,
+        platforms: {
+          ...state.platforms,
+          all: action.payload,
+        },
+      };
+      
+    case 'SET_FILTERED_PLATFORMS':
+      return {
+        ...state,
+        platforms: {
+          ...state.platforms,
+          filtered: action.payload,
+        },
+      };
+      
+    case 'TOGGLE_PLATFORM_SELECTION': {
+      const isSelected = state.platforms.selected.includes(action.payload);
+      const selected = isSelected
+        ? state.platforms.selected.filter(id => id !== action.payload)
+        : [...state.platforms.selected, action.payload];
+      
+      return {
+        ...state,
+        platforms: {
+          ...state.platforms,
+          selected,
+        },
+      };
+    }
+    
+    case 'CLEAR_PLATFORM_SELECTION':
+      return {
+        ...state,
+        platforms: {
+          ...state.platforms,
+          selected: [],
+        },
+      };
+      
+    case 'SET_PLATFORM_SELECTION':
+      return {
+        ...state,
+        platforms: {
+          ...state.platforms,
+          selected: action.payload,
+        },
+      };
+    
+    // Filter actions
+    case 'SET_FILTERS':
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          ...action.payload,
+        },
+      };
+      
+    case 'RESET_FILTERS':
+      return {
+        ...state,
+        filters: initialState.filters,
+      };
+    
+    // UI actions
+    case 'SET_VIEW':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          currentView: action.payload,
+        },
+      };
+      
+    case 'TOGGLE_COMPARISON':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          showComparison: !state.ui.showComparison,
+        },
+      };
+      
+    case 'SHOW_PLATFORM_MODAL':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          showPlatformModal: true,
+          selectedPlatformId: action.payload,
+        },
+      };
+      
+    case 'HIDE_PLATFORM_MODAL':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          showPlatformModal: false,
+          selectedPlatformId: null,
+        },
+      };
+      
+    case 'SET_LOADING':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          loading: action.payload,
+        },
+      };
+      
+    case 'SET_ERROR':
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          error: action.payload,
+        },
+      };
+    
+    // Navigation actions
+    case 'NAVIGATE': {
+      const history = [...state.navigation.history];
+      if (history[history.length - 1] !== action.payload) {
+        history.push(action.payload);
+      }
+      
+      return {
+        ...state,
+        navigation: {
+          currentRoute: action.payload,
+          history,
+        },
+      };
+    }
+    
+    // Preference actions
+    case 'SET_THEME':
+      storageService.set('theme', action.payload);
+      return {
+        ...state,
+        preferences: {
+          ...state.preferences,
+          theme: action.payload,
+        },
+      };
+      
+    case 'SET_ITEMS_PER_PAGE':
+      storageService.set('itemsPerPage', action.payload);
+      return {
+        ...state,
+        preferences: {
+          ...state.preferences,
+          itemsPerPage: action.payload,
+        },
+      };
+    
+    default:
+      return state;
+  }
+}
+
+/**
+ * Context Type
+ */
+interface AppContextType {
+  state: AppState;
+  dispatch: React.Dispatch<Action>;
+  actions: {
+    // Platform actions
+    setPlatforms: (platforms: Platform[]) => void;
+    setFilteredPlatforms: (platforms: Platform[]) => void;
+    togglePlatformSelection: (id: string) => void;
+    clearPlatformSelection: () => void;
+    setPlatformSelection: (ids: string[]) => void;
+    
+    // Filter actions
+    setFilters: (filters: Partial<Filters>) => void;
+    resetFilters: () => void;
+    
+    // UI actions
+    setView: (view: 'cards' | 'table') => void;
+    toggleComparison: () => void;
+    showPlatformModal: (id: string) => void;
+    hidePlatformModal: () => void;
+    setLoading: (loading: boolean) => void;
+    setError: (error: string | null) => void;
+    
+    // Navigation actions
+    navigate: (route: string) => void;
+    
+    // Preference actions
+    setTheme: (theme: 'light' | 'dark') => void;
+    setItemsPerPage: (count: number) => void;
+  };
+}
+
+/**
+ * Create Context
  */
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 /**
  * App Provider Component
+ * 
+ * Provides global state to all child components
  */
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AppState>(initialState);
-
-  // Navigation
-  const setCurrentTab = useCallback((tab: Tab) => {
-    setState(prev => ({ ...prev, currentTab: tab }));
-  }, []);
-
-  // Platform Selection
-  const togglePlatformSelection = useCallback((platformId: string) => {
-    setState(prev => {
-      const { selectedPlatforms } = prev;
-      const maxCompare = APP_CONFIG.ui.maxPlatformsToCompare;
-
-      if (selectedPlatforms.includes(platformId)) {
-        return {
-          ...prev,
-          selectedPlatforms: selectedPlatforms.filter(id => id !== platformId),
-        };
-      } else if (selectedPlatforms.length < maxCompare) {
-        return {
-          ...prev,
-          selectedPlatforms: [...selectedPlatforms, platformId],
-        };
-      } else {
-        // Add warning toast
-        addToast(`Maximum ${maxCompare} platforms can be compared`, TOAST_TYPES.WARNING);
-        return prev;
-      }
-    });
-  }, []);
-
-  const clearPlatformSelection = useCallback(() => {
-    setState(prev => ({ ...prev, selectedPlatforms: [] }));
-  }, []);
-
-  const setSelectedPlatform = useCallback((platform: Platform | null) => {
-    setState(prev => ({ ...prev, selectedPlatform: platform }));
-  }, []);
-
-  // Filters
-  const setFilters = useCallback((filters: Filters) => {
-    setState(prev => ({ ...prev, filters }));
-  }, []);
-
-  const clearFilters = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      filters: initialState.filters,
-    }));
-  }, []);
-
-  const setCurrentView = useCallback((view: 'cards' | 'table') => {
-    setState(prev => ({ ...prev, currentView: view }));
-  }, []);
-
-  // Comparison
-  const setShowComparison = useCallback((show: boolean) => {
-    setState(prev => ({ ...prev, showComparison: show }));
-  }, []);
-
-  const handleCompare = useCallback(() => {
-    if (state.selectedPlatforms.length < 2) {
-      addToast('Select at least 2 platforms to compare', TOAST_TYPES.WARNING);
-      return;
-    }
-    setShowComparison(true);
-  }, [state.selectedPlatforms.length]);
-
-  // Toasts
-  const addToast = useCallback((message: string, type: ToastType = TOAST_TYPES.INFO) => {
-    const id = Math.random().toString(36).substring(7);
-    const toast: ToastMessage = { id, message, type };
-    
-    setState(prev => ({
-      ...prev,
-      toasts: [...prev.toasts, toast],
-    }));
-
-    // Auto-remove after duration
-    setTimeout(() => {
-      removeToast(id);
-    }, APP_CONFIG.ui.toastDuration);
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setState(prev => ({
-      ...prev,
-      toasts: prev.toasts.filter(t => t.id !== id),
-    }));
-  }, []);
-
-  // Export
-  const exportData = useCallback((format: string) => {
-    const fileName = `${APP_CONFIG.export.defaultFileName}.${format}`;
-    
-    if (format === 'csv') {
-      const headers = ['Name', 'Provider', 'Category', 'Market Share', 'Pricing', 'Context Window', 'Compliance Count'];
-      const rows = state.platforms.map(p => [
-        p.name,
-        p.provider,
-        p.categoryLabel,
-        p.marketShare,
-        p.pricing,
-        p.contextWindow,
-        p.complianceCount,
-      ]);
-      const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-      downloadFile(csv, fileName, 'text/csv');
-    } else if (format === 'json') {
-      const data = {
-        exportDate: new Date().toISOString(),
-        client: 'INT Inc.',
-        platformCount: state.platforms.length,
-        platforms: state.platforms,
-      };
-      downloadFile(JSON.stringify(data, null, 2), fileName, 'application/json');
-    }
-    
-    addToast(`Exported as ${format.toUpperCase()}`, TOAST_TYPES.SUCCESS);
-  }, [state.platforms]);
-
-  // Loading & Error
-  const setLoading = useCallback((loading: boolean) => {
-    setState(prev => ({ ...prev, isLoading: loading }));
-  }, []);
-
-  const setError = useCallback((error: Error | null) => {
-    setState(prev => ({ ...prev, error }));
-    if (error) {
-      addToast(error.message, TOAST_TYPES.ERROR);
-    }
-  }, []);
-
-  // Context value
-  const value: AppContextType = {
-    ...state,
-    setCurrentTab,
-    togglePlatformSelection,
-    clearPlatformSelection,
-    setSelectedPlatform,
-    setFilters,
-    clearFilters,
-    setCurrentView,
-    setShowComparison,
-    handleCompare,
-    addToast,
-    removeToast,
-    exportData,
-    setLoading,
-    setError,
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  // Load initial preferences from storage
+  const storedTheme = storageService.get<'light' | 'dark'>('theme');
+  const storedItemsPerPage = storageService.get<number>('itemsPerPage');
+  
+  const initialStateWithPreferences: AppState = {
+    ...initialState,
+    preferences: {
+      ...initialState.preferences,
+      theme: storedTheme || initialState.preferences.theme,
+      itemsPerPage: storedItemsPerPage || initialState.preferences.itemsPerPage,
+    },
   };
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  
+  const [state, dispatch] = useReducer(appReducer, initialStateWithPreferences);
+  
+  // Action creators (memoized)
+  const actions = useMemo(() => ({
+    // Platform actions
+    setPlatforms: (platforms: Platform[]) =>
+      dispatch({ type: 'SET_PLATFORMS', payload: platforms }),
+    
+    setFilteredPlatforms: (platforms: Platform[]) =>
+      dispatch({ type: 'SET_FILTERED_PLATFORMS', payload: platforms }),
+    
+    togglePlatformSelection: (id: string) =>
+      dispatch({ type: 'TOGGLE_PLATFORM_SELECTION', payload: id }),
+    
+    clearPlatformSelection: () =>
+      dispatch({ type: 'CLEAR_PLATFORM_SELECTION' }),
+    
+    setPlatformSelection: (ids: string[]) =>
+      dispatch({ type: 'SET_PLATFORM_SELECTION', payload: ids }),
+    
+    // Filter actions
+    setFilters: (filters: Partial<Filters>) =>
+      dispatch({ type: 'SET_FILTERS', payload: filters }),
+    
+    resetFilters: () =>
+      dispatch({ type: 'RESET_FILTERS' }),
+    
+    // UI actions
+    setView: (view: 'cards' | 'table') =>
+      dispatch({ type: 'SET_VIEW', payload: view }),
+    
+    toggleComparison: () =>
+      dispatch({ type: 'TOGGLE_COMPARISON' }),
+    
+    showPlatformModal: (id: string) =>
+      dispatch({ type: 'SHOW_PLATFORM_MODAL', payload: id }),
+    
+    hidePlatformModal: () =>
+      dispatch({ type: 'HIDE_PLATFORM_MODAL' }),
+    
+    setLoading: (loading: boolean) =>
+      dispatch({ type: 'SET_LOADING', payload: loading }),
+    
+    setError: (error: string | null) =>
+      dispatch({ type: 'SET_ERROR', payload: error }),
+    
+    // Navigation actions
+    navigate: (route: string) =>
+      dispatch({ type: 'NAVIGATE', payload: route }),
+    
+    // Preference actions
+    setTheme: (theme: 'light' | 'dark') =>
+      dispatch({ type: 'SET_THEME', payload: theme }),
+    
+    setItemsPerPage: (count: number) =>
+      dispatch({ type: 'SET_ITEMS_PER_PAGE', payload: count }),
+  }), []);
+  
+  const contextValue = useMemo(() => ({
+    state,
+    dispatch,
+    actions,
+  }), [state, actions]);
+  
+  return (
+    <AppContext.Provider value={contextValue}>
+      {children}
+    </AppContext.Provider>
+  );
 }
 
 /**
  * Hook to use App Context
+ * 
+ * @throws {Error} If used outside of AppProvider
+ * @returns {AppContextType} Application context
  */
-export function useApp() {
+export function useAppContext(): AppContextType {
   const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useApp must be used within AppProvider');
+  
+  if (!context) {
+    throw new Error('useAppContext must be used within AppProvider');
   }
+  
   return context;
 }
 
 /**
- * Helper function to download file
+ * Selector hook for optimized re-renders
+ * 
+ * @template T - Selected value type
+ * @param {function} selector - Function to select slice of state
+ * @returns {T} Selected state value
  */
-function downloadFile(content: string, filename: string, type: string) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+export function useAppSelector<T>(selector: (state: AppState) => T): T {
+  const { state } = useAppContext();
+  return useMemo(() => selector(state), [state, selector]);
 }

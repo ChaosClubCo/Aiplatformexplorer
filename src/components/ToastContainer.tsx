@@ -1,11 +1,10 @@
 import { ToastMessage } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { useToast } from '../contexts/ToastContext';
 
-interface ToastContainerProps {
-  toasts: ToastMessage[];
-}
-
-export default function ToastContainer({ toasts }: ToastContainerProps) {
+export default function ToastContainer() {
+  const { toasts } = useToast();
+  
   const typeClasses: Record<ToastMessage['type'], string> = {
     info: 'bg-[#262626] text-white',
     success: 'bg-[#059669] text-white',

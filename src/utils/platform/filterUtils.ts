@@ -6,6 +6,10 @@
  */
 
 import type { Platform, Filters } from '../../types';
+import { sortPlatforms as sortPlatformsUtil } from './sortUtils';
+
+// Re-export sortPlatforms for convenience
+export { sortPlatforms } from './sortUtils';
 
 /**
  * Filter platforms by search query

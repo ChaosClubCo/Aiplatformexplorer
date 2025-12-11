@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { Platform, Filters, ROIInputs, ToastMessage } from './types';
 import { PLATFORMS_DATA } from './data/platforms';
 import Header from './components/Header';
@@ -6,15 +6,29 @@ import Navigation from './components/Navigation';
 import FilterBar from './components/FilterBar';
 import PlatformCard from './components/PlatformCard';
 import PlatformTable from './components/PlatformTable';
-import FeatureMatrix from './components/FeatureMatrix';
-import ROICalculator from './components/ROICalculator';
-import ComparisonSidebar from './components/ComparisonSidebar';
-import ComparisonModal from './components/ComparisonModal';
-import PlatformModal from './components/PlatformModal';
 import ToastContainer from './components/ToastContainer';
 import Footer from './components/Footer';
-import Glossary from './components/Glossary';
 import Statistics from './components/Statistics';
+
+// Lazy load heavy components for better performance
+const FeatureMatrix = lazy(() => import('./components/FeatureMatrix'));
+const ROICalculator = lazy(() => import('./components/EnhancedROICalculator'));
+const ComparisonSidebar = lazy(() => import('./components/ComparisonSidebar'));
+const ComparisonModal = lazy(() => import('./components/ComparisonModal'));
+const PlatformModal = lazy(() => import('./components/PlatformModal'));
+const Glossary = lazy(() => import('./components/Glossary'));
+
+// Loading fallback component
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center py-12" role="status" aria-live="polite">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-12 h-12 border-4 border-[#EDE8E3] border-t-[#E88A1D] rounded-full animate-spin" />
+        <p className="text-sm text-[#8B8279]">Loading...</p>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('explorer');
@@ -244,13 +258,17 @@ export default function App() {
 
         {currentTab === 'matrix' && (
           <div className="py-8">
-            <FeatureMatrix />
+            <Suspense fallback={<LoadingFallback />}>
+              <FeatureMatrix />
+            </Suspense>
           </div>
         )}
 
         {currentTab === 'financial' && (
           <div className="py-8">
-            <ROICalculator onToast={addToast} />
+            <Suspense fallback={<LoadingFallback />}>
+              <ROICalculator onToast={addToast} />
+            </Suspense>
           </div>
         )}
 
@@ -275,38 +293,46 @@ export default function App() {
 
         {currentTab === 'glossary' && (
           <div className="py-8">
-            <Glossary />
+            <Suspense fallback={<LoadingFallback />}>
+              <Glossary />
+            </Suspense>
           </div>
         )}
       </main>
 
       <Footer onNavigate={setCurrentTab} />
 
-      <ComparisonSidebar
-        selectedPlatforms={selectedPlatforms}
-        platforms={PLATFORMS_DATA}
-        maxCompare={maxCompare}
-        onRemove={togglePlatformSelection}
-        onClear={clearComparison}
-        onCompare={handleCompare}
-      />
+      <Suspense fallback={<LoadingFallback />}>
+        <ComparisonSidebar
+          selectedPlatforms={selectedPlatforms}
+          platforms={PLATFORMS_DATA}
+          maxCompare={maxCompare}
+          onRemove={togglePlatformSelection}
+          onClear={clearComparison}
+          onCompare={handleCompare}
+        />
+      </Suspense>
 
       {selectedPlatform && (
-        <PlatformModal
-          platform={selectedPlatform}
-          onClose={() => setSelectedPlatform(null)}
-          isSelected={selectedPlatforms.includes(selectedPlatform.id)}
-          onToggleSelect={togglePlatformSelection}
-        />
+        <Suspense fallback={<LoadingFallback />}>
+          <PlatformModal
+            platform={selectedPlatform}
+            onClose={() => setSelectedPlatform(null)}
+            isSelected={selectedPlatforms.includes(selectedPlatform.id)}
+            onToggleSelect={togglePlatformSelection}
+          />
+        </Suspense>
       )}
 
       {showComparison && (
-        <ComparisonModal
-          platformIds={selectedPlatforms}
-          platforms={PLATFORMS_DATA}
-          onClose={() => setShowComparison(false)}
-          onExport={exportData}
-        />
+        <Suspense fallback={<LoadingFallback />}>
+          <ComparisonModal
+            platformIds={selectedPlatforms}
+            platforms={PLATFORMS_DATA}
+            onClose={() => setShowComparison(false)}
+            onExport={exportData}
+          />
+        </Suspense>
       )}
 
       <ToastContainer toasts={toasts} />

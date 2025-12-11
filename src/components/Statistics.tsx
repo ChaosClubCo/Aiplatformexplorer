@@ -1,3 +1,5 @@
+import { motion } from 'motion/react';
+
 export default function Statistics() {
   const stats = [
     {
@@ -24,11 +26,15 @@ export default function Statistics() {
   ];
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {stats.map((stat, index) => (
-        <div
+        <motion.div
           key={index}
-          className="bg-white border border-[#EDE8E3] rounded-xl p-5 hover:border-[#B5ADA6] hover:shadow-md transition-all"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1, duration: 0.3 }}
+          whileHover={{ y: -4, boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}
+          className="bg-white border border-[#EDE8E3] rounded-xl p-5 hover:border-[#B5ADA6] transition-all"
         >
           <div className={`text-2xl text-[#231C19] mb-1 font-serif ${stat.isRange ? 'text-[#E88A1D]' : ''}`}>
             {stat.value}
@@ -37,7 +43,7 @@ export default function Statistics() {
           <div className="flex items-center gap-2 text-xs text-[#8B8279]">
             <span className="italic">{stat.source}</span>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );

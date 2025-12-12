@@ -17,6 +17,8 @@ const ROICalculator = lazy(() => import('../pages/ROICalculator').then(module =>
 const Recommendations = lazy(() => import('../pages/Recommendations').then(module => ({ default: module.default || module })));
 const PersonaGenerator = lazy(() => import('../pages/PersonaGenerator').then(module => ({ default: module.default || module })));
 
+const FeatureMatrix = lazy(() => import('../components/FeatureMatrix').then(module => ({ default: module.default || module })));
+
 // Placeholder for pages that don't exist yet
 const PlaceholderPage = ({ title }: { title: string }) => (
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -37,8 +39,8 @@ const ROUTES = {
     title: 'Platform Explorer' 
   },
   comparison: { 
-    component: () => <PlaceholderPage title="Platform Comparison" />, 
-    title: 'Comparison' 
+    component: FeatureMatrix, 
+    title: 'Feature Matrix' 
   },
   recommendation: { 
     component: Recommendations, 

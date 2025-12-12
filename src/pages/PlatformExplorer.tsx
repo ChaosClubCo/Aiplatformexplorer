@@ -10,6 +10,7 @@ import { useAppContext } from '../context/AppContext';
 import { Container, PageHeader } from '../components/layouts/MainLayout';
 import { filterPlatforms, sortPlatforms } from '../utils/platform/filterUtils';
 import { analyticsService } from '../services/analyticsService';
+import { usePlatformDeepLink } from '../features/platform-explorer/hooks/usePlatformDeepLink';
 
 // Import features from FSD slice
 import {
@@ -19,6 +20,8 @@ import {
   Statistics,
   ViewToggle
 } from '../features/platform-explorer';
+import { ExportMenu } from '../features/platform-explorer/components/ExportMenu';
+import PlatformModal from '../features/platform-explorer/components/PlatformModal';
 
 /**
  * Platform Explorer Page Component
@@ -31,12 +34,21 @@ import {
 export default function PlatformExplorer(): JSX.Element {
   const { state, actions } = useAppContext();
   
+  // Initialize deep linking for platform details
+  usePlatformDeepLink();
+  
   // Filter and sort platforms based on current filters
   const filteredAndSortedPlatforms = useMemo(() => {
     const filtered = filterPlatforms(state.platforms.all, state.filters);
     const sorted = sortPlatforms(filtered, state.filters.sortBy);
     return sorted;
   }, [state.platforms.all, state.filters]);
+  
+  // Find selected platform for modal
+  const selectedPlatform = useMemo(() => {
+    if (!state.ui.selectedPlatformId) return null;
+    return state.platforms.all.find(p => p.id === state.ui.selectedPlatformId);
+  }, [state.platforms.all, state.ui.selectedPlatformId]);
   
   // Update filtered platforms in state
   useEffect(() => {
@@ -94,10 +106,13 @@ export default function PlatformExplorer(): JSX.Element {
         title="AI Platform Explorer"
         description={`Compare ${stats.total} AI platforms across ${stats.categories} categories from ${stats.providers} leading providers`}
         actions={
-          <ViewToggle
-            currentView={state.ui.currentView}
-            onChange={handleViewChange}
-          />
+          <div className="flex items-center gap-3">
+            <ExportMenu />
+            <ViewToggle
+              currentView={state.ui.currentView}
+              onChange={handleViewChange}
+            />
+          </div>
         }
       />
       
@@ -154,13 +169,24 @@ export default function PlatformExplorer(): JSX.Element {
         ) : (
           <PlatformTable
             platforms={filteredAndSortedPlatforms}
-            selectedIds={state.platforms.selected}
+            selectedPlatforms={state.platforms.selected}
             onToggleSelect={handlePlatformSelect}
             onViewDetails={handlePlatformView}
+            maxCompare={3}
           />
         )
       ) : (
         <EmptyState onReset={() => actions.resetFilters()} />
+      )}
+      
+      {/* Platform Detail Modal */}
+      {state.ui.showPlatformModal && selectedPlatform && (
+        <PlatformModal
+          platform={selectedPlatform}
+          onClose={() => actions.hidePlatformModal()}
+          isSelected={state.platforms.selected.includes(selectedPlatform.id)}
+          onToggleSelect={() => handlePlatformSelect(selectedPlatform.id)}
+        />
       )}
     </Container>
   );

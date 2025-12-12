@@ -91,6 +91,13 @@ export interface ROIResults {
   breakEvenMonth: number;
 }
 
+export interface WeightConfig {
+  capabilities: number; // 0-100
+  security: number;     // 0-100
+  cost: number;         // 0-100
+  customization: number; // 0-100
+}
+
 export interface ToastMessage {
   id: string;
   message: string;

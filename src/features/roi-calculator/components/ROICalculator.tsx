@@ -15,14 +15,17 @@
  * - Export functionality
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { Switch } from '../../../components/ui/switch';
+import { Label } from '../../../components/ui/label';
 
 export interface ROICalculatorProps {
   onToast: (message: string, type: 'success' | 'warning' | 'error') => void;
 }
 
 export default function ROICalculator({ onToast }: ROICalculatorProps) {
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const [inputs, setInputs] = useState({
     employeeCount: 100,
     avgSalary: 75000,
@@ -36,6 +39,23 @@ export default function ROICalculator({ onToast }: ROICalculatorProps) {
 
   const [showBenchmarks, setShowBenchmarks] = useState(true);
   const [showExecutiveSummary, setShowExecutiveSummary] = useState(false);
+
+  // Handle Demo Mode Toggle
+  useEffect(() => {
+    if (isDemoMode) {
+      setInputs({
+        employeeCount: 500,
+        avgSalary: 95000,
+        platformCost: 30,
+        implementationCost: 25000,
+        adoptionRate: 89, // Executive sponsored target
+        productivityGain: 'midpoint',
+        timeHorizon: 12,
+        industry: 'technology'
+      });
+      onToast('Demo mode activated: Industry benchmarks loaded', 'success');
+    }
+  }, [isDemoMode, onToast]);
 
   // Validated industry benchmarks from research
   const industryMultipliers = {
@@ -173,14 +193,27 @@ ${results.roi >= 100 ? 'PROCEED - Strong ROI justifies investment' :
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6"
+        className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
       >
-        <h2 className="text-2xl sm:text-3xl mb-2 font-serif">
-          ROI Calculator with Validated Benchmarks
-        </h2>
-        <p className="text-base sm:text-lg text-[#5C524D]">
-          Calculate projected return using real industry data from Capgemini, Gartner, and enterprise case studies.
-        </p>
+        <div>
+          <h2 className="text-2xl sm:text-3xl mb-2 font-serif">
+            ROI Calculator with Validated Benchmarks
+          </h2>
+          <p className="text-base sm:text-lg text-[#5C524D]">
+            Calculate projected return using real industry data.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-2 bg-white border border-[#EDE8E3] rounded-lg px-3 py-2 shadow-sm">
+          <Switch 
+            id="demo-mode" 
+            checked={isDemoMode}
+            onCheckedChange={setIsDemoMode}
+          />
+          <Label htmlFor="demo-mode" className="cursor-pointer font-medium text-[#5C524D]">
+            Demo Mode
+          </Label>
+        </div>
       </motion.div>
 
       {/* Benchmark Cards */}

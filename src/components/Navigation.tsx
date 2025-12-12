@@ -1,24 +1,27 @@
-interface NavigationProps {
-  currentTab: string;
-  onTabChange: (tab: string) => void;
-  platformCount: number;
-}
+import { useAppContext } from '../context/AppContext';
 
-export default function Navigation({ currentTab, onTabChange, platformCount }: NavigationProps) {
+export default function Navigation() {
+  const { state, actions } = useAppContext();
+  const currentTab = state.navigation.currentRoute;
+  const platformCount = state.platforms.filtered.length;
+
   const tabs = [
     { id: 'explorer', label: 'Platform Explorer', icon: '🔍', badge: platformCount },
-    { id: 'matrix', label: 'Feature Matrix', icon: '📊' },
-    { id: 'financial', label: 'ROI Calculator', icon: '💰' },
-    { id: 'assessment', label: 'Get Recommendation', icon: '🤖' },
-    { id: 'glossary', label: 'Glossary', icon: '📚' }
+    { id: 'comparison', label: 'Feature Matrix', icon: '📊' },
+    { id: 'roi', label: 'ROI Calculator', icon: '💰' },
+    { id: 'recommendation', label: 'Get Recommendation', icon: '🤖' },
   ];
+
+  const handleTabChange = (tabId: string) => {
+    actions.navigate(tabId);
+  };
 
   return (
     <nav className="flex items-center gap-1 bg-white border-b border-[#EDE8E3] px-6 overflow-x-auto scrollbar-none">
       {tabs.map(tab => (
         <button
           key={tab.id}
-          onClick={() => onTabChange(tab.id)}
+          onClick={() => handleTabChange(tab.id)}
           className={`relative flex items-center gap-2 px-5 py-4 text-sm transition-all whitespace-nowrap ${
             currentTab === tab.id
               ? 'text-[#E88A1D]'

@@ -7,7 +7,7 @@
  */
 
 import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
-import { Platform, Filters } from '../types';
+import { Platform, Filters, WeightConfig } from '../types';
 import { PLATFORMS_DATA } from '../data/platforms';
 import { storageService } from '../services/storageService';
 
@@ -46,6 +46,7 @@ export interface AppState {
     theme: 'light' | 'dark';
     language: 'en';
     itemsPerPage: number;
+    weights: WeightConfig;
   };
 }
 
@@ -77,7 +78,8 @@ type Action =
   
   // Preference actions
   | { type: 'SET_THEME'; payload: 'light' | 'dark' }
-  | { type: 'SET_ITEMS_PER_PAGE'; payload: number };
+  | { type: 'SET_ITEMS_PER_PAGE'; payload: number }
+  | { type: 'SET_WEIGHTS'; payload: WeightConfig };
 
 /**
  * Initial State
@@ -110,6 +112,12 @@ const initialState: AppState = {
     theme: 'light',
     language: 'en',
     itemsPerPage: 12,
+    weights: {
+      capabilities: 50,
+      security: 50,
+      cost: 50,
+      customization: 50,
+    },
   },
 };
 
@@ -281,6 +289,15 @@ function appReducer(state: AppState, action: Action): AppState {
           itemsPerPage: action.payload,
         },
       };
+
+    case 'SET_WEIGHTS':
+      return {
+        ...state,
+        preferences: {
+          ...state.preferences,
+          weights: action.payload,
+        },
+      };
     
     default:
       return state;
@@ -319,6 +336,7 @@ interface AppContextType {
     // Preference actions
     setTheme: (theme: 'light' | 'dark') => void;
     setItemsPerPage: (count: number) => void;
+    setWeights: (weights: WeightConfig) => void;
   };
 }
 
@@ -402,6 +420,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     
     setItemsPerPage: (count: number) =>
       dispatch({ type: 'SET_ITEMS_PER_PAGE', payload: count }),
+
+    setWeights: (weights: WeightConfig) =>
+      dispatch({ type: 'SET_WEIGHTS', payload: weights }),
   }), []);
   
   const contextValue = useMemo(() => ({

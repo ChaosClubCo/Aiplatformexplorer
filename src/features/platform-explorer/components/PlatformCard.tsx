@@ -1,4 +1,4 @@
-import { Platform } from '../types';
+import { Platform } from '../../../types';
 import { memo, useCallback } from 'react';
 import { motion } from 'motion/react';
 

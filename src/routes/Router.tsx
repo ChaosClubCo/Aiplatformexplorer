@@ -13,6 +13,9 @@ import { useEventToasts } from '../hooks/useEventToasts';
 
 // Lazy load pages for code splitting
 const PlatformExplorer = lazy(() => import('../pages/PlatformExplorer').then(module => ({ default: module.default || module })));
+const ROICalculator = lazy(() => import('../pages/ROICalculator').then(module => ({ default: module.default || module })));
+const Recommendations = lazy(() => import('../pages/Recommendations').then(module => ({ default: module.default || module })));
+const PersonaGenerator = lazy(() => import('../pages/PersonaGenerator').then(module => ({ default: module.default || module })));
 
 // Placeholder for pages that don't exist yet
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -38,11 +41,11 @@ const ROUTES = {
     title: 'Comparison' 
   },
   recommendation: { 
-    component: () => <PlaceholderPage title="AI Recommendations" />, 
+    component: Recommendations, 
     title: 'Recommendations' 
   },
   roi: { 
-    component: () => <PlaceholderPage title="ROI Calculator" />, 
+    component: ROICalculator, 
     title: 'ROI Calculator' 
   },
   analytics: { 
@@ -50,7 +53,7 @@ const ROUTES = {
     title: 'Analytics' 
   },
   personas: { 
-    component: () => <PlaceholderPage title="Persona Generator" />, 
+    component: PersonaGenerator, 
     title: 'Persona Generator' 
   },
   projects: { 

@@ -11,12 +11,14 @@ import { Container, PageHeader } from '../components/layouts/MainLayout';
 import { filterPlatforms, sortPlatforms } from '../utils/platform/filterUtils';
 import { analyticsService } from '../services/analyticsService';
 
-// Import existing components directly
-import FilterBar from '../components/FilterBar';
-import PlatformCard from '../components/PlatformCard';
-import PlatformTable from '../components/PlatformTable';
-import Statistics from '../components/Statistics';
-import ViewToggle from '../components/ViewToggle';
+// Import features from FSD slice
+import {
+  FilterBar,
+  PlatformCard,
+  PlatformTable,
+  Statistics,
+  ViewToggle
+} from '../features/platform-explorer';
 
 /**
  * Platform Explorer Page Component

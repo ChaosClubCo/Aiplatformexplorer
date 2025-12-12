@@ -1,4 +1,4 @@
-import { Filters } from '../types';
+import { Filters } from '../../../types';
 import { useState } from 'react';
 
 interface FilterBarProps {

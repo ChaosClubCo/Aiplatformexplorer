@@ -15,14 +15,14 @@
  * - Export functionality
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 
-interface ROICalculatorProps {
+export interface ROICalculatorProps {
   onToast: (message: string, type: 'success' | 'warning' | 'error') => void;
 }
 
-export default function EnhancedROICalculator({ onToast }: ROICalculatorProps) {
+export default function ROICalculator({ onToast }: ROICalculatorProps) {
   const [inputs, setInputs] = useState({
     employeeCount: 100,
     avgSalary: 75000,
@@ -276,13 +276,7 @@ ${results.roi >= 100 ? 'PROCEED - Strong ROI justifies investment' :
                 onChange={e => setInputs({ ...inputs, industry: e.target.value as any })}
                 className="w-full px-3 py-3 text-base border border-[#D9D2CC] rounded-lg focus:border-[#E88A1D] focus:ring-2 focus:ring-[rgba(232,138,29,0.1)] outline-none"
                 aria-describedby="industry-help"
-              >
-                <option value="general">General / Other</option>
-                <option value="financial">Financial Services (+15%)</option>
-                <option value="healthcare">Healthcare (+10%)</option>
-                <option value="technology">Technology (+20%)</option>
-                <option value="manufacturing">Manufacturing (+5%)</option>
-              </select>
+              />
               <div id="industry-help" className="text-xs text-[#8B8279] mt-1">
                 Industry multiplier based on case study data
               </div>

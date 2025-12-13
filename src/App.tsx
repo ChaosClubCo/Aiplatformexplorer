@@ -11,6 +11,8 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { ErrorBoundary } from './components/core/ErrorBoundary';
 import { AppProvider } from './context/AppContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { ScenarioProvider } from './contexts/ScenarioContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { LoadingFallback } from './components/core/LoadingFallback';
 
@@ -126,11 +128,15 @@ export default function App(): JSX.Element {
       }}
     >
       <ToastProvider>
-        <AppProvider>
-          <Suspense fallback={<LoadingFallback />}>
-            <Router />
-          </Suspense>
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            <ScenarioProvider>
+              <Suspense fallback={<LoadingFallback />}>
+                <Router />
+              </Suspense>
+            </ScenarioProvider>
+          </AppProvider>
+        </AuthProvider>
       </ToastProvider>
     </ErrorBoundary>
   );

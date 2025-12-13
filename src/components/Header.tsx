@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { ScenarioManager } from '../features/scenarios/components/ScenarioManager';
+import { TeamSettings } from '../features/team/components/TeamSettings';
 
 interface HeaderProps {
   compareCount: number;
@@ -63,6 +65,9 @@ export default function Header({ compareCount, onCompare, onExport, compareDisab
 
           {/* Actions */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <ScenarioManager />
+            <TeamSettings />
+            
             <div className="relative" ref={exportMenuRef}>
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}

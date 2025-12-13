@@ -18,6 +18,8 @@ const Recommendations = lazy(() => import('../pages/Recommendations').then(modul
 const PersonaGenerator = lazy(() => import('../pages/PersonaGenerator').then(module => ({ default: module.default || module })));
 
 const FeatureMatrix = lazy(() => import('../components/FeatureMatrix').then(module => ({ default: module.default || module })));
+const IntelligenceDashboard = lazy(() => import('../pages/IntelligenceDashboard').then(module => ({ default: module.default || module })));
+const EcosystemHub = lazy(() => import('../pages/EcosystemHub').then(module => ({ default: module.default || module })));
 
 // Placeholder for pages that don't exist yet
 const PlaceholderPage = ({ title }: { title: string }) => (
@@ -62,6 +64,14 @@ const ROUTES = {
     component: () => <PlaceholderPage title="Project Dashboard" />, 
     title: 'Projects' 
   },
+  intelligence: {
+    component: IntelligenceDashboard,
+    title: 'Decision Intelligence'
+  },
+  ecosystem: {
+    component: EcosystemHub,
+    title: 'Operational Ecosystem'
+  }
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

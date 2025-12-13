@@ -8,6 +8,7 @@
 import React, { Suspense, lazy } from 'react';
 import { LoadingFallback } from '../core/LoadingFallback';
 import { useAppContext } from '../../context/AppContext';
+import { CommandPalette } from '../CommandPalette';
 
 // Lazy load layout components - use default imports since they're already in root components folder
 const Header = lazy(() => import('../Header').then(module => ({ default: module.default || module })));
@@ -70,6 +71,9 @@ export function MainLayout({ children }: MainLayoutProps): JSX.Element {
       <Suspense fallback={null}>
         <Footer />
       </Suspense>
+      
+      {/* Command Palette */}
+      <CommandPalette />
       
       {/* Toast Notifications */}
       <Suspense fallback={null}>

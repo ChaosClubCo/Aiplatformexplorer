@@ -9,7 +9,8 @@ export default function Navigation() {
     { id: 'explorer', label: 'Platform Explorer', icon: '🔍', badge: platformCount },
     { id: 'comparison', label: 'Feature Matrix', icon: '📊' },
     { id: 'roi', label: 'ROI Calculator', icon: '💰' },
-    { id: 'recommendation', label: 'Get Recommendation', icon: '🤖' },
+    { id: 'intelligence', label: 'Intelligence', icon: '🧠' },
+    { id: 'ecosystem', label: 'Ecosystem', icon: '🌐' },
   ];
 
   const handleTabChange = (tabId: string) => {

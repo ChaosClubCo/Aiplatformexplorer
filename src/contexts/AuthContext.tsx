@@ -1,102 +1,55 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { UserProfile, Role, Permission, ROLE_PERMISSIONS } from '../types/auth';
+import React, { createContext, useContext, useState, useMemo } from 'react';
+import { UserProfile, LoginCredentials } from '../utils/validation';
 
 interface AuthState {
   user: UserProfile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  error: string | null;
 }
 
 interface AuthContextType extends AuthState {
-  login: (email: string, role?: Role) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
-  switchRole: (role: Role) => void;
-  hasPermission: (permission: Permission) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock initial user for demo purposes
-const MOCK_USER: UserProfile = {
-  id: 'usr_123456',
-  email: 'demo@enterprise.ai',
-  fullName: 'Alex Innovation',
-  role: 'admin', // Default to admin for full access
-  organizationId: 'org_789',
-  avatarUrl: 'https://github.com/shadcn.png',
+const INTERNAL_USER: UserProfile = {
+  id: 'internal-user',
+  name: 'Internal User',
+  email: 'user@int.com',
+  role: 'admin',
+  organization: 'INT Inc.',
+  // Using a placeholder avatar
+  avatarUrl: 'https://github.com/shadcn.png'
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null, // Start null to simulate auth check
-    isLoading: true,
-    isAuthenticated: false,
+  // Hardcoded authenticated state for internal tool usage
+  const [state] = useState<AuthState>({
+    user: INTERNAL_USER,
+    isLoading: false,
+    isAuthenticated: true,
+    error: null,
   });
 
-  // Simulate session check
-  useEffect(() => {
-    const initAuth = async () => {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Check local storage for persisted role preference
-      const savedRole = localStorage.getItem('ape_demo_role') as Role;
-      const user = { ...MOCK_USER, role: savedRole || 'admin' };
-      
-      setState({
-        user,
-        isLoading: false,
-        isAuthenticated: true,
-      });
-    };
-
-    initAuth();
-  }, []);
-
-  const login = async (email: string, role: Role = 'viewer') => {
-    setState(prev => ({ ...prev, isLoading: true }));
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const user = { ...MOCK_USER, email, role };
-    setState({
-      user,
-      isLoading: false,
-      isAuthenticated: true,
-    });
+  const login = async (credentials: LoginCredentials) => {
+    // No-op for internal tool
+    console.log('Login request ignored - Internal Tool Mode');
+    return Promise.resolve();
   };
 
   const logout = async () => {
-    setState(prev => ({ ...prev, isLoading: true }));
-    await new Promise(resolve => setTimeout(resolve, 400));
-    localStorage.removeItem('ape_demo_role');
-    setState({
-      user: null,
-      isLoading: false,
-      isAuthenticated: false,
-    });
-  };
-
-  const switchRole = (role: Role) => {
-    if (!state.user) return;
-    localStorage.setItem('ape_demo_role', role);
-    setState(prev => ({
-      ...prev,
-      user: { ...prev.user!, role }
-    }));
-  };
-
-  const hasPermission = (permission: Permission): boolean => {
-    if (!state.user) return false;
-    const permissions = ROLE_PERMISSIONS[state.user.role];
-    return permissions.includes(permission);
+    // No-op for internal tool
+    console.log('Logout request ignored - Internal Tool Mode');
+    return Promise.resolve();
   };
 
   const value = useMemo(() => ({
     ...state,
     login,
     logout,
-    switchRole,
-    hasPermission
   }), [state]);
 
   return (

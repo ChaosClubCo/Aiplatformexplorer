@@ -1,5 +1,19 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ROIInputs, ROIInputsSchema } from '../../utils/validation';
+import { z } from 'zod';
+
+// Schema defined locally to avoid circular dependency/initialization issues
+const ROIInputsSchema = z.object({
+  employeeCount: z.number().min(1, "Must have at least 1 employee").max(1000000),
+  avgSalary: z.number().min(0),
+  platformCost: z.number().min(0),
+  implementationCost: z.number().min(0),
+  adoptionRate: z.number().min(0).max(100),
+  productivityGain: z.enum(['conservative', 'midpoint', 'optimistic']),
+  timeHorizon: z.number().min(1).max(60), // Months
+  industry: z.enum(['general', 'financial', 'technology', 'healthcare', 'manufacturing'])
+});
+
+type ROIInputs = z.infer<typeof ROIInputsSchema>;
 
 /**
  * Custom Hook: Logic for ROI Calculator

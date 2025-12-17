@@ -16,7 +16,8 @@ class SecureStorage {
 
   constructor() {
     // In production, this key might be rotated or derived from user inputs
-    this.encryptionKey = process.env.REACT_APP_ENCRYPTION_KEY || 'default-secure-key-v1';
+    // Safe fallback for browser environments where process is not defined
+    this.encryptionKey = 'default-secure-key-v1';
   }
 
   /**

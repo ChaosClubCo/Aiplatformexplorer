@@ -95,9 +95,9 @@ class AnalyticsService {
     this.sendEvent(data);
     
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
+    // if (process.env.NODE_ENV === 'development') {
       console.error('Analytics Error:', error, context);
-    }
+    // }
   }
   
   /**
@@ -146,9 +146,9 @@ class AnalyticsService {
     // In production, send to your analytics service
     // Examples: Google Analytics, Mixpanel, Segment, etc.
     
-    if (process.env.NODE_ENV === 'development') {
+    // if (process.env.NODE_ENV === 'development') {
       console.log('📊 Analytics Event:', data);
-    }
+    // }
     
     // Example: Google Analytics
     if (typeof window !== 'undefined' && (window as any).gtag) {

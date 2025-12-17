@@ -9,12 +9,14 @@
  */
 
 import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { ErrorBoundary } from './components/core/ErrorBoundary';
 import { AppProvider } from './context/AppContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { ScenarioProvider } from './contexts/ScenarioContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { LoadingFallback } from './components/core/LoadingFallback';
+import { dataManagementService } from './services/dataManagementService';
 
 // Core enterprise infrastructure
 import {
@@ -37,7 +39,7 @@ function initializeApp() {
   
   // Set feature flag context
   featureFlags.setContext({
-    environment: process.env.NODE_ENV as any,
+    environment: 'development',
   });
   
   // Start performance monitoring
@@ -63,6 +65,22 @@ function initializeApp() {
       context: 'unhandledrejection',
       severity: 'high' as const,
     });
+  });
+  
+  // Check and seed data
+  dataManagementService.getData('platforms', { skipCache: true, source: 'api' }).then(platforms => {
+    if (!platforms || (Array.isArray(platforms) && platforms.length === 0)) {
+        console.log('Seeding initial data...');
+        dataManagementService.seedData().then(success => {
+            if (success) {
+              console.log('Data seeded successfully');
+              // Clear cache to ensure fresh data next time
+              dataManagementService.clearCache();
+            } else {
+              console.error('Data seeding failed');
+            }
+        });
+    }
   });
   
   // Log app initialization
@@ -127,17 +145,19 @@ export default function App(): JSX.Element {
         }, 'critical');
       }}
     >
-      <ToastProvider>
-        <AuthProvider>
-          <AppProvider>
-            <ScenarioProvider>
-              <Suspense fallback={<LoadingFallback />}>
-                <Router />
-              </Suspense>
-            </ScenarioProvider>
-          </AppProvider>
-        </AuthProvider>
-      </ToastProvider>
+      <BrowserRouter>
+        <ToastProvider>
+          <AuthProvider>
+            <AppProvider>
+              <ScenarioProvider>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Router />
+                </Suspense>
+              </ScenarioProvider>
+            </AppProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

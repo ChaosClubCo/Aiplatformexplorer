@@ -312,7 +312,7 @@ export class FeatureFlagManager {
         contextValue = context.userId;
         break;
       case 'environment':
-        contextValue = context.environment || process.env.NODE_ENV;
+        contextValue = context.environment || 'development';
         break;
       case 'custom':
         contextValue = condition.field ? context.customProperties?.[condition.field] : null;

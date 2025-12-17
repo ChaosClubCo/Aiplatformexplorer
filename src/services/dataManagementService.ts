@@ -7,6 +7,10 @@
 
 import { Platform } from '../types';
 import { storageService } from './storageService';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { PlatformArraySchema, QuestionArraySchema } from '../types/zodSchemas';
+import { PLATFORMS_DATA } from '../data/platforms';
+import { RECOMMENDATION_QUESTIONS } from '../data/questions';
 
 /**
  * Data version information
@@ -63,9 +67,9 @@ class DataManagementService {
   };
   
   private dataSources: Map<string, DataSource> = new Map([
-    ['local', { type: 'local', priority: 1, enabled: true }],
-    ['notion', { type: 'notion', priority: 2, enabled: false }],
-    ['api', { type: 'api', priority: 3, enabled: false }],
+    ['api', { type: 'api', priority: 1, enabled: true }],
+    ['local', { type: 'local', priority: 2, enabled: true }],
+    ['notion', { type: 'notion', priority: 3, enabled: false }],
   ]);
   
   private currentVersion: DataVersion = {
@@ -257,8 +261,46 @@ class DataManagementService {
         return null;
         
       case 'api':
-        // API fetch would go here
-        return null;
+        const baseUrl = `https://${projectId}.supabase.co/functions/v1/make-server-8c5e19c9`;
+        try {
+            const response = await fetch(`${baseUrl}/${key}`, {
+              headers: {
+                'Authorization': `Bearer ${publicAnonKey}`
+              }
+            });
+            
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`);
+            }
+            
+            const json = await response.json();
+            
+            // Validate with Zod
+            if (key === 'platforms') {
+                const result = PlatformArraySchema.safeParse(json);
+                if (!result.success) {
+                    console.error('Zod validation failed for platforms:', result.error);
+                    return null;
+                }
+                // Check if empty array, might want to fallback if we expect data
+                if (result.data.length === 0) return null;
+                return result.data as T;
+            } else if (key === 'questions') {
+                 const result = QuestionArraySchema.safeParse(json);
+                 if (!result.success) {
+                    console.error('Zod validation failed for questions:', result.error);
+                    return null;
+                }
+                 if (result.data.length === 0) return null;
+                return result.data as T;
+            }
+            
+            return json as T;
+        } catch (e) {
+            console.error('Fetch error:', e);
+            return null;
+        }
         
       case 'file':
         // File system read would go here
@@ -269,6 +311,37 @@ class DataManagementService {
     }
   }
   
+  /**
+   * Seed data to API
+   */
+  async seedData(): Promise<boolean> {
+     const baseUrl = `https://${projectId}.supabase.co/functions/v1/make-server-8c5e19c9`;
+     try {
+        const response = await fetch(`${baseUrl}/seed`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${publicAnonKey}`
+            },
+            body: JSON.stringify({
+                platforms: PLATFORMS_DATA,
+                questions: RECOMMENDATION_QUESTIONS
+            })
+        });
+        
+        if (!response.ok) {
+           const errorText = await response.text();
+           console.error('Seed API error:', response.status, response.statusText, errorText);
+           return false;
+        }
+        
+        return true;
+     } catch (e) {
+         console.error('Seed error:', e);
+         return false;
+     }
+  }
+
   /**
    * Save data to all enabled sources
    */
@@ -324,7 +397,7 @@ class DataManagementService {
         break;
         
       case 'api':
-        // API save would go here
+        // We don't have a generic save endpoint, but seeding handles initial data
         break;
         
       case 'file':
@@ -433,21 +506,13 @@ class DataManagementService {
       
       if (!platforms) {
         errors.push('No platform data found');
-      } else if (!Array.isArray(platforms)) {
-        errors.push('Platform data is not an array');
       } else {
-        // Validate each platform
-        platforms.forEach((platform, index) => {
-          if (!platform.id) {
-            errors.push(`Platform at index ${index} missing id`);
-          }
-          if (!platform.name) {
-            errors.push(`Platform at index ${index} missing name`);
-          }
-          if (!platform.provider) {
-            errors.push(`Platform at index ${index} missing provider`);
-          }
-        });
+         const result = PlatformArraySchema.safeParse(platforms);
+         if (!result.success) {
+            result.error.errors.forEach(err => {
+                errors.push(`Validation error at ${err.path.join('.')}: ${err.message}`);
+            });
+         }
       }
     } catch (error) {
       errors.push(`Validation error: ${error}`);
@@ -487,6 +552,7 @@ class DataManagementService {
       return {
         success: true,
         backupKey,
+        timestamp,
         timestamp,
       };
     } catch (error) {

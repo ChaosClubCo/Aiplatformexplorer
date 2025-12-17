@@ -313,7 +313,7 @@ export class EventBus {
  * Global event bus instance
  */
 export const globalEventBus = new EventBus({
-  enableLogging: process.env.NODE_ENV === 'development',
+  enableLogging: true,
   enableMetrics: true,
   maxListeners: 200,
   errorHandler: (error, event) => {

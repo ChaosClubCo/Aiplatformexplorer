@@ -464,9 +464,9 @@ export class AuditLogger {
     }
     
     // Console log for development
-    if (process.env.NODE_ENV === 'development') {
+    // if (process.env.NODE_ENV === 'development') {
       console.log(`[Audit] ${severity.toUpperCase()}: ${action} by ${user}`, details);
-    }
+    // }
   }
   
   /**

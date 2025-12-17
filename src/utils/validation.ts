@@ -46,3 +46,22 @@ export const PlatformSchema = z.object({
   compliance: z.array(z.string()),
   scores: z.record(z.number())
 });
+
+// --- 4. Authentication Schemas ---
+
+export const LoginCredentialsSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters')
+});
+
+export const UserProfileSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: z.enum(['admin', 'editor', 'viewer']),
+  avatarUrl: z.string().optional(),
+  organization: z.string()
+});
+
+export type LoginCredentials = z.infer<typeof LoginCredentialsSchema>;
+export type UserProfile = z.infer<typeof UserProfileSchema>;

@@ -5,24 +5,24 @@
 **Version:** 3.0.0  
 **Total Flows:** 30 (10 personas × 3 stages)  
 **Detail Level:** Maximum Depth  
-**Flow Types:** Discovery, Evaluation, Decision  
+**Flow Types:** Discovery, Evaluation, Decision
 
 ---
 
 ## 📊 Flow Overview
 
-| Persona | Discovery | Evaluation | Decision | Total Steps | Avg Time |
-|---------|-----------|------------|----------|-------------|----------|
-| **Emily (Enterprise)** | 5 steps | 5 steps | 5 steps | 15 | 6-8 weeks |
-| **Marcus (Startup)** | 4 steps | 5 steps | 5 steps | 14 | 1 week |
-| **Sarah (ML Engineer)** | 4 steps | 6 steps | 4 steps | 14 | 3-4 weeks |
-| **David (Product)** | 4 steps | 6 steps | 5 steps | 15 | 4-6 weeks |
-| **Jennifer (Compliance)** | 4 steps | 5 steps | 5 steps | 14 | 2-3 weeks |
-| **Robert (Budget)** | 3 steps | 6 steps | 5 steps | 14 | 2 weeks |
-| **Lisa (DevRel)** | 4 steps | 5 steps | 5 steps | 14 | 2 weeks |
-| **Dr. Wilson (Research)** | 4 steps | 6 steps | 6 steps | 16 | 4-6 weeks |
-| **Angela (Analyst)** | 4 steps | 6 steps | 5 steps | 15 | 1 week |
-| **Michael (IT)** | 4 steps | 5 steps | 6 steps | 15 | 4-6 weeks |
+| Persona                   | Discovery | Evaluation | Decision | Total Steps | Avg Time  |
+| ------------------------- | --------- | ---------- | -------- | ----------- | --------- |
+| **Emily (Enterprise)**    | 5 steps   | 5 steps    | 5 steps  | 15          | 6-8 weeks |
+| **Marcus (Startup)**      | 4 steps   | 5 steps    | 5 steps  | 14          | 1 week    |
+| **Sarah (ML Engineer)**   | 4 steps   | 6 steps    | 4 steps  | 14          | 3-4 weeks |
+| **David (Product)**       | 4 steps   | 6 steps    | 5 steps  | 15          | 4-6 weeks |
+| **Jennifer (Compliance)** | 4 steps   | 5 steps    | 5 steps  | 14          | 2-3 weeks |
+| **Robert (Budget)**       | 3 steps   | 6 steps    | 5 steps  | 14          | 2 weeks   |
+| **Lisa (DevRel)**         | 4 steps   | 5 steps    | 5 steps  | 14          | 2 weeks   |
+| **Dr. Wilson (Research)** | 4 steps   | 6 steps    | 6 steps  | 16          | 4-6 weeks |
+| **Angela (Analyst)**      | 4 steps   | 6 steps    | 5 steps  | 15          | 1 week    |
+| **Michael (IT)**          | 4 steps   | 5 steps    | 6 steps  | 15          | 4-6 weeks |
 
 ---
 
@@ -31,6 +31,7 @@
 ### **Discovery Phase** (Week 1-2, 5 steps)
 
 #### **Step 1.1: Initial Landing**
+
 - **Entry Point:** Google search "enterprise AI platform comparison"
 - **Page:** Homepage
 - **Actions:**
@@ -41,6 +42,7 @@
 - **Next:** Scroll to explore
 
 #### **Step 1.2: Filter by Compliance**
+
 - **Page:** Platform Explorer
 - **Actions:**
   - Opens filter sidebar
@@ -52,6 +54,7 @@
 - **Next:** Review filtered platforms
 
 #### **Step 1.3: Review Enterprise Features**
+
 - **Page:** Platform Explorer (filtered)
 - **Actions:**
   - Opens feature matrix
@@ -62,6 +65,7 @@
 - **Next:** Shortlist top 3
 
 #### **Step 1.4: Compare Top 3 Platforms**
+
 - **Page:** Comparison Modal
 - **Actions:**
   - Adds Azure OpenAI, Google Vertex, AWS Bedrock to comparison
@@ -72,6 +76,7 @@
 - **Next:** Download report
 
 #### **Step 1.5: Download Detailed Report**
+
 - **Page:** Comparison Modal
 - **Actions:**
   - Clicks "Export Comparison"
@@ -87,6 +92,7 @@
 ### **Evaluation Phase** (Week 3-4, 5 steps)
 
 #### **Step 2.1: Return Visit - ROI Analysis**
+
 - **Entry Point:** Bookmark return
 - **Page:** ROI Calculator
 - **Actions:**
@@ -99,6 +105,7 @@
 - **Next:** Save calculations
 
 #### **Step 2.2: Deep Dive - Feature Matrix**
+
 - **Page:** Feature Matrix
 - **Actions:**
   - Reviews all 30+ features
@@ -109,6 +116,7 @@
 - **Next:** Technical documentation
 
 #### **Step 2.3: Review Vendor Documentation**
+
 - **Page:** Platform detail pages
 - **Actions:**
   - Opens Azure OpenAI docs (external)
@@ -119,6 +127,7 @@
 - **Next:** Schedule vendor demos
 
 #### **Step 2.4: Schedule Vendor Demos**
+
 - **External Action**
 - **Actions:**
   - Emails vendors using exported data
@@ -129,6 +138,7 @@
 - **Next:** Team evaluation
 
 #### **Step 2.5: Create Executive Summary**
+
 - **Page:** Returns to platform
 - **Actions:**
   - Re-exports updated comparison
@@ -144,6 +154,7 @@
 ### **Decision Phase** (Week 5-8, 5 steps)
 
 #### **Step 3.1: Build Business Case**
+
 - **Page:** ROI Calculator + Exports
 - **Actions:**
   - Finalizes ROI projections
@@ -154,6 +165,7 @@
 - **Next:** C-suite presentation
 
 #### **Step 3.2: Present to C-Suite**
+
 - **External Action**
 - **Actions:**
   - Presents to CTO, CFO, CISO
@@ -165,6 +177,7 @@
 - **Next:** Vendor negotiations
 
 #### **Step 3.3: Negotiate with Vendors**
+
 - **External Action**
 - **Actions:**
   - Uses platform data for leverage
@@ -175,6 +188,7 @@
 - **Next:** Final recommendation
 
 #### **Step 3.4: Make Final Recommendation**
+
 - **Page:** Platform (reference)
 - **Actions:**
   - Returns to verify final details
@@ -186,6 +200,7 @@
 - **Next:** Procurement
 
 #### **Step 3.5: Initiate Procurement**
+
 - **External Action**
 - **Actions:**
   - Submits procurement request
@@ -203,6 +218,7 @@
 ### **Discovery Phase** (Day 1, 4 steps)
 
 #### **Step 1.1: Urgent Search**
+
 - **Entry Point:** Google "best AI API for startups"
 - **Page:** Homepage
 - **Actions:**
@@ -214,6 +230,7 @@
 - **Next:** Check pricing
 
 #### **Step 1.2: Filter by Price**
+
 - **Page:** Platform Explorer
 - **Actions:**
   - Clicks "Sort by Price: Low to High"
@@ -223,6 +240,7 @@
 - **Next:** Quick comparison
 
 #### **Step 1.3: Quick Feature Check**
+
 - **Page:** Platform cards
 - **Actions:**
   - Checks API availability (must-have)
@@ -233,6 +251,7 @@
 - **Next:** Use recommendation engine
 
 #### **Step 1.4: Recommendation Engine**
+
 - **Page:** Recommendation Wizard
 - **Actions:**
   - Answers 11 questions in 3 minutes
@@ -250,6 +269,7 @@
 ### **Evaluation Phase** (Day 2-3, 5 steps)
 
 #### **Step 2.1: Return - Technical Specs**
+
 - **Entry Point:** Direct URL (bookmarked)
 - **Page:** OpenAI platform detail
 - **Actions:**
@@ -261,6 +281,7 @@
 - **Next:** Pricing deep dive
 
 #### **Step 2.2: Calculate Real Costs**
+
 - **Page:** Pricing page (external) + Notes
 - **Actions:**
   - Calculates estimated monthly cost
@@ -272,6 +293,7 @@
 - **Next:** Documentation quality
 
 #### **Step 2.3: Check Documentation**
+
 - **Page:** OpenAI docs (external)
 - **Actions:**
   - Scans quickstart guide
@@ -283,6 +305,7 @@
 - **Next:** Community check
 
 #### **Step 2.4: Community Research**
+
 - **External:** Reddit, Discord, Twitter
 - **Actions:**
   - Searches "OpenAI API review" on Reddit
@@ -294,6 +317,7 @@
 - **Next:** Test API
 
 #### **Step 2.5: API Playground Test**
+
 - **Page:** OpenAI Playground
 - **Actions:**
   - Creates free account
@@ -309,6 +333,7 @@
 ### **Decision Phase** (Day 4-7, 5 steps)
 
 #### **Step 3.1: Quick ROI Check**
+
 - **Page:** Platform ROI Calculator
 - **Actions:**
   - Inputs startup assumptions
@@ -319,6 +344,7 @@
 - **Next:** Discuss with co-founder
 
 #### **Step 3.2: Co-founder Discussion**
+
 - **External Action**
 - **Actions:**
   - Shows co-founder the recommendation
@@ -330,6 +356,7 @@
 - **Next:** Sign up for trial
 
 #### **Step 3.3: Start Trial**
+
 - **External:** OpenAI website
 - **Actions:**
   - Creates account (email signup)
@@ -340,6 +367,7 @@
 - **Next:** Build POC
 
 #### **Step 3.4: Build Proof of Concept**
+
 - **External:** Development
 - **Actions:**
   - Integrates API into app
@@ -351,6 +379,7 @@
 - **Next:** Full deployment
 
 #### **Step 3.5: Deploy to Production**
+
 - **External:** Development
 - **Actions:**
   - Rolls out to 10% of customers
@@ -368,6 +397,7 @@
 ### **Discovery Phase** (Week 1, 4 steps)
 
 #### **Step 1.1: Colleague Recommendation**
+
 - **Entry Point:** Slack message from colleague
 - **Page:** Homepage
 - **Actions:**
@@ -379,6 +409,7 @@
 - **Next:** Filter by context window
 
 #### **Step 1.2: Sort by Context Window**
+
 - **Page:** Platform Explorer
 - **Actions:**
   - Clicks "Sort by Context Window: Largest First"
@@ -389,6 +420,7 @@
 - **Next:** Technical deep dive
 
 #### **Step 1.3: Feature Matrix Analysis**
+
 - **Page:** Feature Matrix
 - **Actions:**
   - Opens feature matrix in new tab
@@ -402,6 +434,7 @@
 - **Next:** Compare specs
 
 #### **Step 1.4: Technical Documentation**
+
 - **Page:** Platform details
 - **Actions:**
   - Opens docs for top 3 platforms
@@ -417,6 +450,7 @@
 ### **Evaluation Phase** (Week 2, 6 steps)
 
 #### **Step 2.1: API Testing Setup**
+
 - **External:** Development environment
 - **Actions:**
   - Sets up test environment
@@ -427,6 +461,7 @@
 - **Next:** Performance testing
 
 #### **Step 2.2: Latency Benchmarks**
+
 - **External:** Testing
 - **Actions:**
   - Tests API latency (p50, p95, p99)
@@ -437,6 +472,7 @@
 - **Next:** Quality testing
 
 #### **Step 2.3: Output Quality Evaluation**
+
 - **External:** Testing
 - **Actions:**
   - Runs same prompts across platforms
@@ -447,6 +483,7 @@
 - **Next:** Fine-tuning test
 
 #### **Step 2.4: Fine-tuning Capabilities**
+
 - **Page:** Platform documentation
 - **Actions:**
   - Checks fine-tuning documentation
@@ -458,6 +495,7 @@
 - **Next:** Cost analysis
 
 #### **Step 2.5: Detailed Cost Modeling**
+
 - **Page:** Platform + Spreadsheet
 - **Actions:**
   - Calculates costs for production load
@@ -468,6 +506,7 @@
 - **Next:** Create comparison
 
 #### **Step 2.6: Technical Comparison Spreadsheet**
+
 - **External:** Google Sheets
 - **Actions:**
   - Creates detailed technical comparison
@@ -483,6 +522,7 @@
 ### **Decision Phase** (Week 3-4, 4 steps)
 
 #### **Step 3.1: Team Presentation**
+
 - **External Action**
 - **Actions:**
   - Presents findings to ML team
@@ -494,6 +534,7 @@
 - **Next:** Create recommendation
 
 #### **Step 3.2: Formal Recommendation**
+
 - **External:** Document
 - **Actions:**
   - Writes technical recommendation doc
@@ -504,6 +545,7 @@
 - **Next:** Management approval
 
 #### **Step 3.3: Management Approval**
+
 - **External Action**
 - **Actions:**
   - Presents to engineering director
@@ -515,6 +557,7 @@
 - **Next:** Procurement
 
 #### **Step 3.4: Work with Procurement**
+
 - **External Action**
 - **Actions:**
   - Submits vendor request
@@ -532,6 +575,7 @@
 ### **Discovery Phase** (Week 1, 4 steps)
 
 #### **Step 1.1: Google Search**
+
 - **Entry Point:** "AI platform for SaaS products"
 - **Page:** Homepage
 - **Actions:**
@@ -542,6 +586,7 @@
 - **Next:** Browse use cases
 
 #### **Step 1.2: Find Relevant Use Cases**
+
 - **Page:** Use cases section
 - **Actions:**
   - Looks for "Document Analysis" use case
@@ -553,6 +598,7 @@
 - **Next:** Check testimonials
 
 #### **Step 1.3: Customer Testimonials**
+
 - **Page:** Testimonials section
 - **Actions:**
   - Reads reviews from similar companies
@@ -564,6 +610,7 @@
 - **Next:** Use recommendation engine
 
 #### **Step 1.4: Recommendation Engine**
+
 - **Page:** Recommendation Wizard
 - **Actions:**
   - Answers all 11 questions
@@ -582,6 +629,7 @@
 ### **Evaluation Phase** (Week 2-3, 6 steps)
 
 #### **Step 2.1: ROI Calculator - Initial**
+
 - **Page:** ROI Calculator
 - **Actions:**
   - Opens ROI calculator
@@ -595,6 +643,7 @@
 - **Next:** Refine calculations
 
 #### **Step 2.2: ROI Calculator - Detailed**
+
 - **Page:** ROI Calculator (advanced mode)
 - **Actions:**
   - Adds implementation costs ($50K)
@@ -607,6 +656,7 @@
 - **Next:** Export data
 
 #### **Step 2.3: Export ROI Report**
+
 - **Page:** ROI Calculator
 - **Actions:**
   - Clicks "Export Report"
@@ -617,6 +667,7 @@
 - **Next:** Feature comparison
 
 #### **Step 2.4: Feature Comparison**
+
 - **Page:** Comparison Modal
 - **Actions:**
   - Compares top 3 platforms
@@ -630,6 +681,7 @@
 - **Next:** Review docs
 
 #### **Step 2.5: Integration Guides**
+
 - **Page:** Documentation (external)
 - **Actions:**
   - Reviews integration guides for each platform
@@ -641,6 +693,7 @@
 - **Next:** Watch demos
 
 #### **Step 2.6: Vendor Demo Videos**
+
 - **External:** YouTube, vendor sites
 - **Actions:**
   - Watches product demos
@@ -655,6 +708,7 @@
 ### **Decision Phase** (Week 4-6, 5 steps)
 
 #### **Step 3.1: Create Business Case**
+
 - **External:** PowerPoint
 - **Actions:**
   - Creates executive presentation
@@ -667,6 +721,7 @@
 - **Next:** Present to leadership
 
 #### **Step 3.2: Leadership Presentation**
+
 - **External Action**
 - **Actions:**
   - Presents to VP Product, CFO
@@ -678,6 +733,7 @@
 - **Next:** Engineering validation
 
 #### **Step 3.3: Engineering Feedback**
+
 - **External Action**
 - **Actions:**
   - Reviews selection with engineering lead
@@ -689,6 +745,7 @@
 - **Next:** Schedule vendor demo
 
 #### **Step 3.4: Live Vendor Demos**
+
 - **External Action**
 - **Actions:**
   - Schedules demos with top 2 vendors
@@ -700,6 +757,7 @@
 - **Next:** Final decision
 
 #### **Step 3.5: Final Decision**
+
 - **Page:** Platform (final verification)
 - **Actions:**
   - Returns to platform for final check

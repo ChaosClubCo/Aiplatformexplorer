@@ -6,10 +6,11 @@
  * @architecture Flux-inspired unidirectional data flow
  */
 
-import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
-import { Platform, Filters, WeightConfig } from '../types';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useEffect } from 'react';
+import { Platform, Filters, WeightConfig, Stack } from '../types';
 import { PLATFORMS_DATA } from '../data/platforms';
 import { storageService } from '../services/storageService';
+import { stackService } from '../services/stackPersistence';
 
 /**
  * Application State Interface
@@ -22,6 +23,9 @@ export interface AppState {
     selected: string[];
   };
   
+  // Stacks (Saved Collections)
+  stacks: Stack[];
+
   // Filters
   filters: Filters;
   
@@ -61,6 +65,11 @@ type Action =
   | { type: 'CLEAR_PLATFORM_SELECTION' }
   | { type: 'SET_PLATFORM_SELECTION'; payload: string[] }
   
+  // Stack actions
+  | { type: 'SET_STACKS'; payload: Stack[] }
+  | { type: 'ADD_STACK'; payload: Stack }
+  | { type: 'DELETE_STACK'; payload: string }
+
   // Filter actions
   | { type: 'SET_FILTERS'; payload: Partial<Filters> }
   | { type: 'RESET_FILTERS' }
@@ -90,6 +99,7 @@ const initialState: AppState = {
     filtered: PLATFORMS_DATA,
     selected: [],
   },
+  stacks: [],
   filters: {
     provider: 'all',
     category: 'all',
@@ -179,6 +189,22 @@ function appReducer(state: AppState, action: Action): AppState {
           selected: action.payload,
         },
       };
+
+    // Stack Actions
+    case 'SET_STACKS':
+      return { ...state, stacks: action.payload };
+
+    case 'ADD_STACK': {
+      const newStacks = [...state.stacks, action.payload];
+      stackService.save(action.payload); // Side effect: persist
+      return { ...state, stacks: newStacks };
+    }
+
+    case 'DELETE_STACK': {
+      const newStacks = state.stacks.filter(s => s.id !== action.payload);
+      stackService.delete(action.payload); // Side effect: persist
+      return { ...state, stacks: newStacks };
+    }
     
     // Filter actions
     case 'SET_FILTERS':
@@ -318,6 +344,10 @@ interface AppContextType {
     clearPlatformSelection: () => void;
     setPlatformSelection: (ids: string[]) => void;
     
+    // Stack actions
+    addStack: (stack: Stack) => void;
+    deleteStack: (id: string) => void;
+
     // Filter actions
     setFilters: (filters: Partial<Filters>) => void;
     resetFilters: () => void;
@@ -355,8 +385,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const storedTheme = storageService.get<'light' | 'dark'>('theme');
   const storedItemsPerPage = storageService.get<number>('itemsPerPage');
   
+  // Load stacks
+  const storedStacks = stackService.getAll();
+
   const initialStateWithPreferences: AppState = {
     ...initialState,
+    stacks: storedStacks,
     preferences: {
       ...initialState.preferences,
       theme: storedTheme || initialState.preferences.theme,
@@ -384,6 +418,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPlatformSelection: (ids: string[]) =>
       dispatch({ type: 'SET_PLATFORM_SELECTION', payload: ids }),
     
+    // Stack actions
+    addStack: (stack: Stack) => 
+      dispatch({ type: 'ADD_STACK', payload: stack }),
+      
+    deleteStack: (id: string) => 
+      dispatch({ type: 'DELETE_STACK', payload: id }),
+
     // Filter actions
     setFilters: (filters: Partial<Filters>) =>
       dispatch({ type: 'SET_FILTERS', payload: filters }),

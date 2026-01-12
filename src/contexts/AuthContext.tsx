@@ -11,6 +11,7 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
+  hasPermission: (permission: string) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,10 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return Promise.resolve();
   };
 
+  const hasPermission = (permission: string) => {
+    // Internal tool: always allow everything (admin access)
+    return true;
+  };
+
   const value = useMemo(() => ({
     ...state,
     login,
     logout,
+    hasPermission,
   }), [state]);
 
   return (

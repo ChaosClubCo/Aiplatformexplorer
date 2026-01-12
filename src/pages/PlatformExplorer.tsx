@@ -5,12 +5,13 @@
  * @module pages/PlatformExplorer
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Container, PageHeader } from '../components/layouts/MainLayout';
 import { filterPlatforms, sortPlatforms } from '../utils/platform/filterUtils';
 import { analyticsService } from '../services/analyticsService';
 import { usePlatformDeepLink } from '../features/platform-explorer/hooks/usePlatformDeepLink';
+import { SaveStackDialog } from '../features/stacks';
 
 // Import features from FSD slice
 import {
@@ -22,6 +23,7 @@ import {
 } from '../features/platform-explorer';
 import { ExportMenu } from '../features/platform-explorer/components/ExportMenu';
 import PlatformModal from '../features/platform-explorer/components/PlatformModal';
+import { Layers } from 'lucide-react';
 
 /**
  * Platform Explorer Page Component
@@ -33,6 +35,7 @@ import PlatformModal from '../features/platform-explorer/components/PlatformModa
  */
 export default function PlatformExplorer(): JSX.Element {
   const { state, actions } = useAppContext();
+  const [showSaveStack, setShowSaveStack] = useState(false);
   
   // Initialize deep linking for platform details
   usePlatformDeepLink();
@@ -141,14 +144,24 @@ export default function PlatformExplorer(): JSX.Element {
           )}
         </div>
         
-        {/* Clear Selection Button */}
+        {/* Selection Actions */}
         {state.platforms.selected.length > 0 && (
-          <button
-            onClick={() => actions.clearPlatformSelection()}
-            className="text-sm text-orange-600 hover:text-orange-700 font-medium"
-          >
-            Clear Selection
-          </button>
+          <div className="flex items-center gap-4">
+             <button
+              onClick={() => setShowSaveStack(true)}
+              className="text-sm text-gray-600 hover:text-[#231C19] font-medium flex items-center gap-1.5 transition-colors"
+            >
+              <Layers className="w-4 h-4" />
+              Save as Stack
+            </button>
+            <div className="h-4 w-px bg-gray-300" />
+            <button
+              onClick={() => actions.clearPlatformSelection()}
+              className="text-sm text-orange-600 hover:text-orange-700 font-medium transition-colors"
+            >
+              Clear Selection
+            </button>
+          </div>
         )}
       </div>
       
@@ -188,6 +201,13 @@ export default function PlatformExplorer(): JSX.Element {
           onToggleSelect={() => handlePlatformSelect(selectedPlatform.id)}
         />
       )}
+
+      {/* Save Stack Dialog */}
+      <SaveStackDialog 
+        open={showSaveStack} 
+        onOpenChange={setShowSaveStack} 
+        platformIds={state.platforms.selected} 
+      />
     </Container>
   );
 }

@@ -10,6 +10,7 @@ const RecommendationEngine = lazy(() => import('../features/recommendation/compo
 const PlatformExplorer = lazy(() => import('../pages/PlatformExplorer'));
 const EcosystemHub = lazy(() => import('../pages/EcosystemHub'));
 const PersonaGenerator = lazy(() => import('../pages/PersonaGenerator'));
+const StackManagerPage = lazy(() => import('../pages/StackManagerPage'));
 
 const Dashboard = lazy(() => Promise.resolve({ 
   default: () => (
@@ -38,6 +39,7 @@ export default function Router() {
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/explorer" element={<PlatformExplorer />} />
+        <Route path="/stacks" element={<StackManagerPage />} />
         <Route path="/roi" element={<ROICalculator onToast={(msg, type) => console.log(msg, type)} />} />
         <Route path="/intelligence" element={<RecommendationEngine onToast={(msg, type) => console.log(msg, type)} />} />
         <Route path="/ecosystem" element={<EcosystemHub />} />

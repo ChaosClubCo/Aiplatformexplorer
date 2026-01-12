@@ -103,3 +103,13 @@ export interface ToastMessage {
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
 }
+
+export interface Stack {
+  id: string;
+  name: string;
+  description?: string;
+  platformIds: string[];
+  createdAt: number;
+  updatedAt: number;
+  tags?: string[];
+}

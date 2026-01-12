@@ -34,7 +34,8 @@ import {
   Bot,
   Globe,
   Users,
-  List
+  List,
+  Layers
 } from 'lucide-react';
 import { 
   DropdownMenu, 
@@ -170,6 +171,14 @@ function AppSidebar({ user }: { user: any }) {
                 <Link to="/explorer">
                   <List />
                   <span>Explorer</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActive('/stacks')}>
+                <Link to="/stacks">
+                  <Layers />
+                  <span>Saved Stacks</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

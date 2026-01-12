@@ -11,6 +11,7 @@ import { Platform, Filters, WeightConfig, Stack } from '../types';
 import { PLATFORMS_DATA } from '../data/platforms';
 import { storageService } from '../services/storageService';
 import { stackService } from '../services/stackPersistence';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Application State Interface
@@ -196,13 +197,13 @@ function appReducer(state: AppState, action: Action): AppState {
 
     case 'ADD_STACK': {
       const newStacks = [...state.stacks, action.payload];
-      stackService.save(action.payload); // Side effect: persist
+      // Side effect handled in action creator
       return { ...state, stacks: newStacks };
     }
 
     case 'DELETE_STACK': {
       const newStacks = state.stacks.filter(s => s.id !== action.payload);
-      stackService.delete(action.payload); // Side effect: persist
+      // Side effect handled in action creator
       return { ...state, stacks: newStacks };
     }
     
@@ -381,12 +382,15 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
  * Provides global state to all child components
  */
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  // Get Auth user for sync
+  const { user } = useAuth();
+
   // Load initial preferences from storage
   const storedTheme = storageService.get<'light' | 'dark'>('theme');
   const storedItemsPerPage = storageService.get<number>('itemsPerPage');
   
-  // Load stacks
-  const storedStacks = stackService.getAll();
+  // Load stacks locally immediately
+  const storedStacks = stackService.getLocal();
 
   const initialStateWithPreferences: AppState = {
     ...initialState,
@@ -399,6 +403,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
   
   const [state, dispatch] = useReducer(appReducer, initialStateWithPreferences);
+
+  // Sync with server if user is logged in
+  useEffect(() => {
+    const sync = async () => {
+      if (user?.id) {
+        try {
+          const syncedStacks = await stackService.syncWithServer(user.id);
+          dispatch({ type: 'SET_STACKS', payload: syncedStacks });
+        } catch (e) {
+          console.error("Sync failed silently", e);
+        }
+      }
+    };
+    sync();
+  }, [user]);
   
   // Action creators (memoized)
   const actions = useMemo(() => ({
@@ -419,11 +438,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_PLATFORM_SELECTION', payload: ids }),
     
     // Stack actions
-    addStack: (stack: Stack) => 
-      dispatch({ type: 'ADD_STACK', payload: stack }),
+    addStack: (stack: Stack) => {
+      stackService.saveLocal(stack);
+      if (user?.id) stackService.saveRemote(user.id, stack);
+      dispatch({ type: 'ADD_STACK', payload: stack });
+    },
       
-    deleteStack: (id: string) => 
-      dispatch({ type: 'DELETE_STACK', payload: id }),
+    deleteStack: (id: string) => {
+      stackService.deleteLocal(id);
+      if (user?.id) stackService.deleteRemote(user.id, id);
+      dispatch({ type: 'DELETE_STACK', payload: id });
+    },
 
     // Filter actions
     setFilters: (filters: Partial<Filters>) =>
@@ -464,7 +489,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     setWeights: (weights: WeightConfig) =>
       dispatch({ type: 'SET_WEIGHTS', payload: weights }),
-  }), []);
+  }), [user]); // Re-create actions when user changes
   
   const contextValue = useMemo(() => ({
     state,

@@ -17,6 +17,7 @@ import { ScenarioProvider } from './contexts/ScenarioContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { LoadingFallback } from './components/core/LoadingFallback';
 import { dataManagementService } from './services/dataManagementService';
+import { initSentry, reportWebVitals } from './utils/monitoring';
 
 // Core enterprise infrastructure
 import {
@@ -26,6 +27,9 @@ import {
   globalEventBus,
   DomainEvents,
 } from './core';
+
+// Initialize Sentry FIRST (before any other code)
+initSentry();
 
 // Lazy load pages for optimal performance
 const Router = lazy(() => import('./routes/Router'));
@@ -116,6 +120,9 @@ export default function App(): JSX.Element {
   // Initialize on mount
   useEffect(() => {
     initializeApp();
+    
+    // Report Web Vitals (safe - checks isProd internally)
+    reportWebVitals();
     
     // Generate performance report on unmount
     return () => {
